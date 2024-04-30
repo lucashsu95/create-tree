@@ -11,7 +11,7 @@ const props = defineProps({
 const ary2 = ref(props.ary);
 const ary3 = computed(() => {
   const tmp = [];
-  console.log(ary2.value);
+  // console.log(ary2.value);
   for (const i of ary2.value) {
     if (i[0] == props.title) {
       tmp.push(i[1]);
@@ -26,14 +26,14 @@ const ary3 = computed(() => {
     <div
       class="box"
       :class="[
-        { left: direc == 0},
-        { right: direc == 1},
+        { left: direc == 0 },
+        { right: direc == 1 },
         { 'one-child': childLen == 1 },
       ]"
     >
       {{ title }}
     </div>
-    <div class="childern">
+    <div class="childern" :class="{ two: ary3.length > 1 }">
       <ChildComp
         v-for="(tt, idx) in ary3"
         :key="tt"
@@ -92,8 +92,10 @@ const ary3 = computed(() => {
   transform: rotate(-45deg) translate(-25%, -50%);
 }
 
-.childern{
+.childern {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
+  &.two {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
