@@ -10,14 +10,19 @@ const props = defineProps({
 
 const ary2 = ref(props.ary);
 const ary3 = computed(() => {
-  const tmp = [];
-  // console.log(ary2.value);
-  for (const i of ary2.value) {
-    if (i[0] == props.title) {
-      tmp.push(i[1]);
+  try {
+    const tmp = [];
+    // console.log(ary2.value);
+    for (const i of ary2.value) {
+      if (i[0] == props.title) {
+        tmp.push(i[1]);
+      }
     }
+    return tmp;
+  } catch (e) {
+    alert(e, "錯誤了啦");
+    return;
   }
-  return tmp;
 });
 </script>
 
@@ -61,7 +66,6 @@ const ary3 = computed(() => {
   font-size: 22px;
   border: 1px solid #aaa;
   border-radius: 50%;
-  background: #000;
 
   display: flex;
   justify-content: center;
