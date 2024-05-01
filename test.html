@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Generator</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 2px;
+        }
+
+        .node text {
+            font: 12px sans-serif;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="tree-container">
+        <div>
+            <label for="node-number">輸入節點數量：</label>
+            <input type="number" id="node-number" value="10" min="1" max="100">
+        </div>
+        <div id="node-info">
+            <p>Node A</p>
+            <p>Node B</p>
+        </div>
+    </div>
+
+    <script>
+        // 生成隨機樹狀結構資料
+        function generateTreeData(nodes) {
+            const data = { name: "Root", children: [] };
+            for (let i = 0; i < nodes - 1; i++) {
+                const parentIndex = Math.floor(Math.random() * (i + 1));
+                const parent = findNode(data, parentIndex);
+                parent.children = parent.children || [];
+                parent.children.push({ name: `Node ${i + 1}` });
+            }
+            return data;
+        }
+
+        // 在樹狀結構中查找節點
+        function findNode(node, index) {
+            if (index === 0) return node;
+            let count = 0;
+            function dfs(node) {
+                if (node.children) {
+                    for (const child of node.children) {
+                        count++;
+                        if (count === index) return child;
+                        const found = dfs(child);
+                        if (found) return found;
+                    }
+                }
+            }
+            return dfs(node);
+        }
+
+        // 設定樹狀結構視覺化
+        const width = 600;
+        const height = 400;
+
+        const tree = d3.tree()
+            .size([height, width - 160]);
+
+        const svg = d3.select("#tree-container").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(40,0)");
+
+        function updateTree() {
+            const nodeNumber = +document.getElementById("node-number").value;
+            const root = d3.hierarchy(generateTreeData(nodeNumber));
+            tree(root);
+
+            svg.selectAll("*").remove();
+
+            svg.selectAll(".link")
+                .data(root.links())
+                .enter().append("path")
+                .attr("class", "link")
+                .attr("d", d3.linkHorizontal()
+                    .x(d => d.y)
+                    .y(d => d.x));
+
+            const node = svg.selectAll(".node")
+                .data(root.descendants())
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", d => `translate(${d.y},${d.x})`);
+
+            node.append("circle")
+                .attr("r", 6);
+
+            node.append("text")
+                .attr("dy", "0.31em")
+                .attr("x", d => d.children ? -6 : 6)
+                .attr("text-anchor", d => d.children ? "end" : "start")
+                .text(d => d.data.name);
+
+            // 更新Node A 和 Node B 的文字
+            const nodeInfo = document.getElementById("node-info");
+            const nodeA = root.descendants()[1].data.name;
+            const nodeB = root.descendants()[2].data.name;
+            nodeInfo.innerHTML = `<p>${nodeA}</p><p>${nodeB}</p>`;
+        }
+
+        document.getElementById("node-number").addEventListener("input", updateTree);
+        updateTree();
+    </script>
+</body>
+
+</html>
