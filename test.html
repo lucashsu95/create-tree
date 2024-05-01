@@ -14,7 +14,7 @@
         }
 
         .node text {
-            font: 12px sans-serif;
+            font: 20px sans-serif;
         }
 
         .link {
@@ -27,25 +27,32 @@
 
 <body>
     <div id="tree-container">
-        <div>
-            <label for="node-number">輸入節點數量：</label>
+        <section>
+            <label for="node-number">節點數量</label>
             <input type="number" id="node-number" value="10" min="1" max="100">
-        </div>
-        <div id="node-info">
-            <p>Node A</p>
-            <p>Node B</p>
-        </div>
+        </section>
+        <section>
+            <input type="radio" id="number-node" name="node-type" value="number" checked>
+            <label for="number-node">數字節點</label>
+            <input type="radio" id="english-node" name="node-type" value="english">
+            <label for="english-node">英文節點</label>
+        </section>
+
+        <section>
+            <h2>邊的清單</h2>
+            <div id="node-info" style="border: 1px solid #ccc;"></div>
+        </section>
     </div>
 
     <script>
         // 生成隨機樹狀結構資料
-        function generateTreeData(nodes) {
-            const data = { name: "Root", children: [] };
+        function generateTreeData(nodes, useNumbers) {
+            const data = { name: useNumbers ? 1 : "A", children: [] };
             for (let i = 0; i < nodes - 1; i++) {
                 const parentIndex = Math.floor(Math.random() * (i + 1));
                 const parent = findNode(data, parentIndex);
                 parent.children = parent.children || [];
-                parent.children.push({ name: `Node ${i + 1}` });
+                parent.children.push({ name: useNumbers ? i + 2 : String.fromCharCode(66 + i) });
             }
             return data;
         }
@@ -82,7 +89,8 @@
 
         function updateTree() {
             const nodeNumber = +document.getElementById("node-number").value;
-            const root = d3.hierarchy(generateTreeData(nodeNumber));
+            const useNumbers = document.getElementById("number-node").checked;
+            const root = d3.hierarchy(generateTreeData(nodeNumber, useNumbers));
             tree(root);
 
             svg.selectAll("*").remove();
@@ -110,14 +118,19 @@
                 .attr("text-anchor", d => d.children ? "end" : "start")
                 .text(d => d.data.name);
 
-            // 更新Node A 和 Node B 的文字
+            // 更新邊的資訊
             const nodeInfo = document.getElementById("node-info");
-            const nodeA = root.descendants()[1].data.name;
-            const nodeB = root.descendants()[2].data.name;
-            nodeInfo.innerHTML = `<p>${nodeA}</p><p>${nodeB}</p>`;
+            nodeInfo.innerHTML = '';
+            root.links().forEach(link => {
+                const source = link.source.data.name;
+                const target = link.target.data.name;
+                nodeInfo.innerHTML += `${source},${target}<br>`;
+            });
         }
 
         document.getElementById("node-number").addEventListener("input", updateTree);
+        document.getElementById("number-node").addEventListener("change", updateTree);
+        document.getElementById("english-node").addEventListener("change", updateTree);
         updateTree();
     </script>
 </body>
