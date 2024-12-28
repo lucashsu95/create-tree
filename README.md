@@ -1,29 +1,29 @@
-# vue-project
+# create-tree
 
-This template should help get you started developing with Vue 3 in Vite.
+## Introduce
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+實現一個可以動態修改和顯示的樹狀結構，主要也只是練習vue的操作和遞迴。
 
 ## Project Setup
 
 ```sh
-npm install
+npm i
+# or
+pnpm i
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
 npm run dev
+# or
+pnpm dev
 ```
 
 ### Compile and Minify for Production
 
 ```sh
 npm run build
+# or
+pnpm build
 ```
